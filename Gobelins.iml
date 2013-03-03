@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="Flex" version="4">
+  <component name="FlexBuildConfigurationManager" active="Gobelins">
+    <configurations>
+      <configuration name="Gobelins" pure-as="true" main-class="fatOutFood.Main" output-file="Gobelins.swf" output-folder="$MODULE_DIR$/bin" use-html-wrapper="true" wrapper-template-path="$MODULE_DIR$/html-template">
+        <dependencies target-player="11.1">
+          <entries>
+            <entry library-id="3bdeb6cd-f3de-4730-bf57-511bf8189c1a">
+              <dependency linkage="Merged" />
+            </entry>
+            <entry library-id="91327c78-436c-4e22-a7f4-2b388b172afe">
+              <dependency linkage="Merged" />
+            </entry>
+          </entries>
+          <sdk name="flex_sdk_4.6" />
+        </dependencies>
+        <compiler-options />
+        <packaging-air-desktop />
+        <packaging-android />
+        <packaging-ios />
+      </configuration>
+    </configurations>
+    <compiler-options />
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="jdk" jdkName="flex_sdk_4.6" jdkType="Flex SDK Type (new)" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" exported="">
+      <library type="flex">
+        <properties id="3bdeb6cd-f3de-4730-bf57-511bf8189c1a" />
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/libs/Starling/starling/bin" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/libs/Starling/samples/demo/src" />
+          <root url="file://$MODULE_DIR$/libs/Starling/samples/demo_mobile/src" />
+          <root url="file://$MODULE_DIR$/libs/Starling/samples/demo_web/src" />
+          <root url="file://$MODULE_DIR$/libs/Starling/samples/scaffold_mobile/src" />
+          <root url="file://$MODULE_DIR$/libs/Starling/starling/src" />
+          <root url="file://$MODULE_DIR$/libs/Starling/tests/src" />
+        </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/libs/Starling/starling/bin" recursive="false" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library type="flex">
+        <properties id="91327c78-436c-4e22-a7f4-2b388b172afe" />
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/swc" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/documentation" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/examples/ComponentsExplorer/source" />
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/examples/DisplayObjectExplorer/source" />
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/examples/Gallery/source" />
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/examples/HelloWorld/source" />
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/examples/LayoutExplorer/source" />
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/examples/TileList/source" />
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/examples/YouTubeFeeds/source" />
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/source" />
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/themes/AeonDesktopTheme/source" />
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/themes/AzureMobileTheme/source" />
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/themes/MetalWorksMobileTheme/source" />
+          <root url="file://$MODULE_DIR$/libs/feathers-1.0.1/themes/MinimalMobileTheme/source" />
+        </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/libs/feathers-1.0.1/swc" recursive="false" />
+      </library>
+    </orderEntry>
+  </component>
+</module>
+

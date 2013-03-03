@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+# iOS-tasks v1.0 (2012-04-24)
+
+Copyright (c) 2012 Nicolas Bush <http://www.cordechasse.fr>
+
+This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+-->
+<project name="iOS-tasks">
+
+    <!-- 							-->
+    <!--	LIBRAIRIE ANT EXTERNE	-->
+    <!--							-->
+
+    <!-- ajout de la librairie antlib pour disposer de plus de methodes -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement location="ant/ant-contrib.jar" />
+        </classpath>
+    </taskdef>
+
+
+    <!-- 							-->
+    <!--		PROPERTIES			-->
+    <!--							-->
+
+    <!-- ajout du fichier des propriete -->
+    <!--<property file="ant/iOS-tasks.properties" />-->
+
+    <macrodef name="_initiOSLaunch">
+        <sequential>
+
+            <path id="flextasks.classpath">
+                <fileset dir="${FlexSDK}/ant/lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </path>
+
+            <typedef resource="flexTasks.tasks" classpathref="flextasks.classpath" />
+
+            <property name="adt" value="${FlexSDK}/lib/adt.jar" />
+            <property name="adl" value="${FlexSDK}/bin/adl" />
+            <property name="idb" value="${FlexSDK}/lib/aot/bin/iOSBin/idb" />
+        </sequential>
+    </macrodef>
+
+    <macrodef name="listiOSConnectedDevices">
+        <sequential>
+            <_initiOSLaunch />
+            <exec executable="${idb}">
+                <arg value="-devices"/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="installIpaOnIOSDevice">
+        <attribute name="ipaPath" default="null" />
+        <sequential>
+            <if>
+                <equals arg1="@{ipaPath}" arg2="null" />
+                <then>
+                    <displayMessage message="[installIpaOnIOSDevice] missing parameter 'ipaPath'" />
+                </then>
+                <else>
+                    <_initiOSLaunch />
+                    <displayMessage message="Installing ipa @{ipaPath}" />
+                    <java jar="${adt}" fork="true" failonerror="true">
+                        <arg value="-installApp" />
+
+                        <arg value="-platform" />
+                        <arg value="ios" />
+
+                        <arg value="-package" />
+                        <arg value="@{ipaPath}" />
+                    </java>
+
+                    <displayMessage message="Installation complete." />
+                </else>
+            </if>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="launchIpaOnIOSDevice">
+        <attribute name="appid" default="null" />
+        <attribute name="device" default="" />
+        <sequential>
+            <if>
+                <equals arg1="@{appid}" arg2="null" />
+                <then>
+                    <displayMessage message="[launchIpaOnIOSDevice] missing parameter 'appid'" />
+                </then>
+                <else>
+                    <_initiOSLaunch />
+                    <displayMessage message="Launching application @{appid}" />
+                    <java jar="${adt}" fork="true" failonerror="true">
+                        <arg value="-launchApp" />
+
+                        <arg value="-platform" />
+                        <arg value="ios" />
+
+                        <arg value="-device" />
+                        <arg value="@{device}" />
+
+                        <arg value="-appid" />
+                        <arg value="@{appid}" />
+                    </java>
+
+                    <displayMessage message="Installation complete." />
+                </else>
+            </if>
+        </sequential>
+    </macrodef>
+
+
+
+    <!-- 							-->
+    <!--		ECHO				-->
+    <!--							-->
+
+    <macrodef name="displayMessage">
+        <attribute name="message" default="null" />
+        <sequential>
+            <tstamp>
+                <format property="current.time" pattern="MM/dd/yyyy hh:mm:ss aa" />
+            </tstamp>
+            <echo message="${current.time} :: @{message}" />
+        </sequential>
+    </macrodef>
+
+
+</project>

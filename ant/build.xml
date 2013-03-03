@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ************************************************************************
+
+	author	 : cordechasse
+	date	 : 08.10.2012
+	project  : Multibase Welcome iPad
+
+************************************************************************* -->
+
+<project name="Multibase - Welcome iPad" basedir=".././">
+
+    <property file="./ant/project.properties" />
+
+    <import file="iOS-tasks.xml" />
+    <import file="versions-hunting2.xml" />
+
+    <target name="01. Install IPA" description="public">
+        <installIpaOnIOSDevice ipapath="${multibase.ipa}" />
+    </target>
+
+
+    <target name="02. Increment build version" description="public">
+        <_incrementBuildVersion idSwf="${multibase.id}" />
+    </target>
+
+
+    <target name="03. Update descriptor" description="public">
+        <_updateDescriptorVersion idSwf="${multibase.id}" descriptorPath="${multibase.descriptor}" />
+    </target>
+
+    <target name="04. Kill Flash Debugger" description="public">
+        <exec executable="killall">
+            <arg line="-9 'Flash Player Debugger'" />
+        </exec>
+    </target>
+
+
+</project>

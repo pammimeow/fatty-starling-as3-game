@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+# Versions-hunting v2.0 (2012-04-24)
+
+Copyright (c) 2012 Nicolas Bush <http://www.cordechasse.fr>
+
+This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+-->
+<project name="Versions-hunting">
+	
+	<!-- 							-->
+	<!--	LIBRAIRIE ANT EXTERNE	-->
+	<!--							-->
+		
+	<!-- ajout de la librairie antlib pour disposer de plus de methodes -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+	  <classpath>
+	    <pathelement location="ant/ant-contrib.jar" />
+	  </classpath>
+	</taskdef>
+	
+	<!-- 							-->
+	<!--		PROPERTIES			-->
+	<!--							-->
+	
+
+	<macrodef name="_updateDescriptorVersion">
+
+        <attribute name="idSwf" default="0" />
+        <attribute name="descriptorPath" default="null" />
+
+        <sequential>
+        <if>
+            <equals arg1="@{idSwf}" arg2="0" />
+            <then>
+                <displayMessage message="[_updateDescriptorVersion] missing parameter 'idSwf'" />
+            </then>
+            <else>
+                <_getBuildVersion idSwf="@{idSwf}" incrementBuildVersion="false" />
+
+                <property name="version.file">ant/version@{idSwf}.properties</property>
+
+                <!-- if no result, version is set to 0.0.0 -->
+                <propertyfile file="${version.file}">
+                    <entry key="major" type="int" default="0" operation="="/>
+                    <entry key="minor" type="int" default="0" operation="="/>
+                    <entry key="build" type="int" default="0" operation="="/>
+                </propertyfile>
+
+                <!-- displays the version -->
+                <property file="${version.file}" />
+
+                <_updateDescriptorVersion2 descriptorPath="@{descriptorPath}" major="${major}" minor="${minor}" build="${build}" />
+
+                <displayMessage message="[_updateDescriptorVersion] descriptor updated to version:${major}.${minor}.${build}" />
+                <_deleteFileVersion idSwf="@{idSwf}" />
+
+            </else>
+        </if>
+        </sequential>
+
+    </macrodef>
+
+
+
+	<macrodef name="_updateDescriptorVersion2">
+		<attribute name="descriptorPath" default="null" />
+		<attribute name="major" default="0" />
+		<attribute name="minor" default="0" />
+		<attribute name="build" default="0" />
+					
+		<sequential>
+			<if>
+				<equals arg1="@{descriptorPath}" arg2="null" />
+				<then>
+					<displayMessage message="[_updateDescriptorVersion] missing parameter 'descriptorPath'" />
+				</then>
+				<else>
+					<!-- regexp to update descriptorFile -->
+					<replaceregexp byline="true">
+						<regexp pattern="${air.versionNumber.pattern}"/>
+						<substitution expression="${air.versionNumber.openXML}@{major}.@{minor}.@{build}${air.versionNumber.closeXML}"/>
+						<fileset file="@{descriptorPath}" />
+					</replaceregexp>
+					
+					<displayMessage message="@{descriptorPath} updated to version : @{major}.@{minor}.@{build}" />
+				</else>
+			</if>
+		</sequential>	
+	</macrodef>
+
+	<macrodef name="_updateUpdaterXML">
+		
+		<attribute name="updaterTemplate" default="null" />
+		<attribute name="version" default="0.0.0" />
+		<attribute name="updaterFileName" default="deploy/update.xml" />
+		<attribute name="airFileName" default="null" />
+			
+		<sequential>
+			<if>
+				<equals arg1="@{updaterTemplate}" arg2="null" />
+				<then>
+					<displayMessage message="[_updateUpdaterXML] missing parameter 'updaterTemplate'" />
+				</then>
+				<else>
+					<copy file="@{updaterTemplate}" tofile="@{updaterFileName}" overwrite="Yes" />
+							
+					<!-- on remplace la version -->
+					<replaceregexp byline="true">
+						<regexp pattern="\$version"/>
+						<substitution expression="@{version}"/>
+						<fileset file="@{updaterFileName}" />
+					</replaceregexp>
+					
+					
+					<!-- on remplace le nom du fichier -->
+					<replaceregexp byline="true">
+						<regexp pattern="\$file"/>
+						<substitution expression="@{airFileName}"/>
+						<fileset file="@{updaterFileName}" />
+					</replaceregexp>
+					
+					<displayMessage message="@{updaterFileName} updated to version : @{version}" />
+				</else>
+			</if>
+		</sequential>	
+	</macrodef>
+	
+	
+	
+	<!-- 							-->
+	<!--		GET VERSIONS		-->
+	<!--							-->
+
+
+	<!-- increment the build version -->
+	<macrodef name="_incrementBuildVersion">
+		<attribute name="idSwf" default="0" />
+
+		<sequential>
+			<if>
+				<equals arg1="@{idSwf}" arg2="0" />
+				<then>
+					<displayMessage message="[_getBuildVersion] missing parameter 'idSwf'" />
+				</then>
+				<else>
+
+					<property name="version.file">ant/version@{idSwf}.properties</property>
+
+					<!-- calls the script to get the version -->
+					<post to="${versions.getVersionScript}" verbose="true" logfile="${version.file}" append="false" failonerror="false" maxwait="5">
+				    	<prop name="id_swf" value="@{idSwf}"/>
+						<prop name="inc" value="@{incrementBuildVersion}"/>
+				    </post>
+					
+					<!-- if no result, version is set to 0.0.0 -->
+					<propertyfile file="${version.file}">
+						<entry key="major" type="int" default="0" operation="="/>
+						<entry key="minor" type="int" default="0" operation="="/>
+						<entry key="build" type="int" default="0" operation="="/>
+					</propertyfile>
+					
+					<!-- displays the version -->
+					<property file="${version.file}" />
+					<displayMessage message="[_getBuildVersion] version:${major}.${minor}.${build}" />
+                    <_deleteFileVersion idSwf="@{idSwf}" />
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+
+
+	<!-- creates a property file containing the version of file -->
+	<macrodef name="_getBuildVersion">
+		<attribute name="idSwf" default="0" />
+		<attribute name="incrementBuildVersion" default="true" />
+
+		<sequential>
+			<if>
+				<equals arg1="@{idSwf}" arg2="0" />
+				<then>
+					<displayMessage message="[_getBuildVersion] missing parameter 'idSwf'" />
+				</then>
+				<else>
+
+					<property name="version.file">ant/version@{idSwf}.properties</property>
+
+					<!-- calls the script to get the version -->
+					<post to="${versions.getVersionScript}" verbose="true" logfile="${version.file}" append="false" failonerror="false" maxwait="5">
+				    	<prop name="id_swf" value="@{idSwf}"/>
+						<prop name="inc" value="@{incrementBuildVersion}"/>
+				    </post>
+
+					<!-- if no result, version is set to 0.0.0 -->
+					<propertyfile file="${version.file}">
+						<entry key="major" type="int" default="0" operation="="/>
+						<entry key="minor" type="int" default="0" operation="="/>
+						<entry key="build" type="int" default="0" operation="="/>
+					</propertyfile>
+
+					<!-- displays the version -->
+					<property file="${version.file}" />
+					<displayMessage message="[_getBuildVersion] version:${major}.${minor}.${build}" />
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<!-- deletes the file version -->
+	<macrodef name="_deleteFileVersion">
+		<attribute name="idSwf" default="0" />
+		<sequential>
+			<if>
+				<equals arg1="@{idSwf}" arg2="0" />
+				<then>
+					<displayMessage message="[_deleteFileVersion] missing parameter 'idSwf'" />
+				</then>
+				<else>
+					<property name="version.file">ant/version@{idSwf}.properties</property>
+					<delete file="${version.file}" />
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+	
+	<!-- 							-->
+	<!--		ECHO				-->
+	<!--							-->
+	
+	<macrodef name="displayMessage">
+		<attribute name="message" default="null" />
+		<sequential>
+			<tstamp>
+				<format property="current.time" pattern="MM/dd/yyyy hh:mm:ss aa" />
+			</tstamp>
+			<echo message="${current.time} :: @{message}" />  
+		</sequential>
+	</macrodef>
+</project>
+
